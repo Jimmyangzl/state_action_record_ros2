@@ -1,0 +1,17 @@
+left_pose:
+  msg_type: 'std_msgs/msg/Float64MultiArray'
+  topic: '/cartesian_impedance/pose_desired'
+  signal_type:
+    pose: 
+      dim: [12]
+      dtype: 'float'
+      msg_attr: 'data'
+
+left_gripper:
+  msg_type: 'std_msgs/msg/Float64MultiArray'
+  topic: '/close_gripper'
+  signal_type: 
+    joint_position: 
+      dim: [1]
+      dtype: 'float'
+      msg_attr: 'data'

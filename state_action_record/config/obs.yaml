@@ -1,0 +1,57 @@
+left_ppcp: # sub_name
+  msg_type: 'franka_msgs/msg/FrankaState'
+  topic: "/franka_robot_state_broadcaster/robot_state"
+  signal_type: # signal_name: sub_name+'_'+signal_type, e.g. left_ppcp_pose
+    pose: 
+      dim: [16]
+      dtype: 'float'
+      msg_attr: 'o_t_ee'
+    wrench:
+      dim: [6]
+      dtype: 'float'
+      msg_attr: 'o_f_ext_hat_k'
+    # joint: 
+    #   dim: [7]
+    #   dtype: 'f'
+    #   msg_attr:
+
+left_gripper:
+  msg_type: 'sensor_msgs/msg/JointState'
+  topic: '/panda_gripper/joint_states'
+  signal_type:
+    joint_position:
+      dim: [2]
+      dtype: 'float'
+      msg_attr: 'position'
+
+# Put cams at the last place because noting down cams is slowest
+cam_1_rgb8: # Gripper cam
+  msg_type: 'sensor_msgs/msg/CompressedImage'
+  topic: '/cam_1/cam_1/color/image_raw/compressed'
+  signal_type: 
+    compressed_img:
+      dim: [200000] # dim of compressed img can vary, here set a relatively large dimension
+      dtype: 'np.int32'
+      msg_attr: 'data'
+  # serial_no: _023422072920 
+  # channel: 3
+  # height: 480
+  # width: 640
+  
+cam_2_rgb8: # Third view cam
+  msg_type: 'sensor_msgs/msg/CompressedImage'
+  topic: '/cam_2/cam_2/color/image_raw/compressed'
+  signal_type: 
+    compressed_img:
+      dim: [200000] # dim of compressed img can vary, here set a relatively large dimension
+      dtype: 'np.int32'
+      msg_attr: 'data'
+  # serial_no: _933322071631 
+  # channel: 3
+  # height: 480
+  # width: 640
+
+
+
+# Command to launch realsense
+#ros2 launch realsense2_camera rs_multi_camera_launch.py serial_no1:=_933322071631 camera_name1:='cam_1' camera_namespace1:='cam_1' serial_no2:=_023422072920 camera_name2:='cam_2' camera_namespace2:='cam_2'
