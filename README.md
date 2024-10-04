@@ -30,6 +30,7 @@ e.g.: obs/left_ppcp_pose
 3. ***What to configure?***
 - `config.yaml`: contains general parameters (check comments inside), which can also be configured with argparser.
 - `obs/act.yaml`: here you can specify the names of subscriber (e.g. 'left_ppcp') and the names of signal_type (e.g. pose). Please leave the other names of parameter unchanged. Please also refer to the examples and comments in `obs/act.yaml` to check the parameters to be configured.
+***NOTICE***: Right now, only array-like msg attribute (e.g. `msg.data=[0,1,2]`) is supperted. Might have better compatibility in later versions...
 
 
 

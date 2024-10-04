@@ -3,9 +3,9 @@ left_ppcp: # sub_name
   topic: "/franka_robot_state_broadcaster/robot_state"
   signal_type: # signal_name: sub_name+'_'+signal_type, e.g. left_ppcp_pose
     pose: 
-      dim: [16]
+      dim: [16] # Dimension of the incoming data
       dtype: 'float'
-      msg_attr: 'o_t_ee' # attribute in the msg
+      msg_attr: 'o_t_ee' # attribute in the msg, array-like (e.g. [0,1,2])
     wrench:
       dim: [6]
       dtype: 'float'
