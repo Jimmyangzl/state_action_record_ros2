@@ -25,40 +25,11 @@ class ObsActSubscriber(Node):
         self.obs_current_ = {}
         self.act_current_ = {}
         self.configs = {}
-        
-    def set_configuration(self):
-        assert self.save_path, "No save path defined!"
-        self.record_file = h5py.File(self.save_path, "w")
-        for data_class in self.data_classes:
-            self.configs[data_class] = get_config(data_class)
-            self.signal_groups[data_class] = self.record_file.create_group('/'+data_class)
-            self.signal_current_[data_class] = {}
-            for sub_name, sub_config in self.configs[data_class].items():
-                self.create_sub(sub_name, sub_config, data_class)
-                self.create_datasets(sub_name, sub_config, data_class)
-
-    def start_node(self):
-        self.robot_start_pos = np.zeros(3)
-        self.start_pos_flag = False
-        self.sub_start_pos = self.create_subscription(
-            Float64MultiArray,
-            "/franka_start_pos",
-            self.start_pos_callback,
-            1)
-        self.get_logger().info(f'Waiting for start position of EE...')
-        while not self.start_pos_flag:
-            rclpy.spin_once(self)
-        # self.sub_start_pos.destroy()
-        self.get_logger().info(f'Recording will start in {self.start_waiting_time}s...')
-        time.sleep(self.start_waiting_time) 
-        self.get_logger().info(f'Start recording!')
-        timer_period = 1.0 / self.freq
-        self.timer = self.create_timer(timer_period, self.timer_callback)
     
     def set_args(self):
         parser_args_dict = vars(self.parser_args)
         config_path = os.path.join(
-            get_package_share_directory('visual_joint_collect'),
+            get_package_share_directory('state_action_record'),
             'config',
             'config.yaml'
         )
@@ -70,6 +41,37 @@ class ObsActSubscriber(Node):
             setattr(self, key, value)
             self.get_logger().info(key + ': ' + str(value))
         return True
+
+    def set_configuration(self):
+        assert self.save_path, "No save path defined!"
+        self.record_file = h5py.File(self.save_path, "w")
+        for data_class in self.data_classes:
+            self.configs[data_class] = get_config(data_class)
+            self.signal_groups[data_class] = self.record_file.create_group('/'+data_class)
+            self.signal_current_[data_class] = {}
+            for sub_name, sub_config in self.configs[data_class].items():
+                self.create_sub(sub_name, sub_config, data_class)
+                self.create_datasets(sub_name, sub_config, data_class)
+    
+    def start_node(self):
+        #----------- Starting Condition ---------------#
+        if self.need_start_condition:
+            self.robot_start_pos = np.zeros(3)
+            self.start_pos_flag = False
+            self.sub_start_pos = self.create_subscription(
+                Float64MultiArray,
+                "/franka_start_pos",
+                self.start_pos_callback,
+                1)
+            self.get_logger().info(f'Waiting for start position of EE...')
+            while not self.start_pos_flag:
+                rclpy.spin_once(self)
+        #-----------------------------------------------------------------#
+        self.get_logger().info(f'Recording will start in {self.start_waiting_time}s...')
+        time.sleep(self.start_waiting_time) 
+        self.get_logger().info(f'Start recording!')
+        timer_period = 1.0 / self.freq
+        self.timer = self.create_timer(timer_period, self.timer_callback)
 
     def create_sub(self, sub_name, sub_config, data_class):
         msg_type = get_msg_type(sub_config['msg_type'])
@@ -98,11 +100,6 @@ class ObsActSubscriber(Node):
             signal_name = sub_name+"_"+type_key
             self.signal_current_[data_class][signal_name] = np.array(
                 getattr(msg,type_value['msg_attr']), dtype=eval(type_value['dtype']))
-
-    def start_pos_callback(self, msg):
-        self.robot_start_pos = np.array(msg.data)
-        self.get_logger().info(f'Robot start position: {self.robot_start_pos}')
-        self.start_pos_flag = True
         
     def timer_callback(self):
         signal2log = self.signal_current_
@@ -114,13 +111,17 @@ class ObsActSubscriber(Node):
                 if data_class == 'act' and 'pose' in signal_name:
                     value[:3] += self.robot_start_pos
                 #-----------------------------------------------------------------#
-                print(value)
                 self.signal_groups[data_class][signal_name][-1, :len(value)] = value
                 #----------- Handle specific conditions of dataset ---------------#
                 if 'cam' in signal_name:
                     self.signal_groups[data_class][signal_name][-1, len(value)] = np.array(
                         -1, dtype=np.int32)
                 #-----------------------------------------------------------------#
+    
+    def start_pos_callback(self, msg):
+        self.robot_start_pos = np.array(msg.data)
+        self.get_logger().info(f'Robot start position: {self.robot_start_pos}')
+        self.start_pos_flag = True
             
             
 class OneEuroFilter:

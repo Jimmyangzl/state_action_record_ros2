@@ -5,7 +5,7 @@ left_ppcp: # sub_name
     pose: 
       dim: [16]
       dtype: 'float'
-      msg_attr: 'o_t_ee'
+      msg_attr: 'o_t_ee' # attribute in the msg
     wrench:
       dim: [6]
       dtype: 'float'
@@ -51,7 +51,3 @@ cam_2_rgb8: # Third view cam
   # height: 480
   # width: 640
 
-
-
-# Command to launch realsense
-#ros2 launch realsense2_camera rs_multi_camera_launch.py serial_no1:=_933322071631 camera_name1:='cam_1' camera_namespace1:='cam_1' serial_no2:=_023422072920 camera_name2:='cam_2' camera_namespace2:='cam_2'

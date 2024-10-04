@@ -23,7 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-		'state_action_record.py = state_action_record.state_action_record:main'        
+		'state_action_record = state_action_record.state_action_record:main'        
         ],
     },
 )

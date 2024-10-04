@@ -5,10 +5,11 @@ import argparse
 import importlib
 import numpy as np
 
+pkg_name = 'state_action_record'
 
 def get_parser():
     config_path = os.path.join(
-        get_package_share_directory('visual_joint_collect'),
+        get_package_share_directory(pkg_name),
         'config',
         'config.yaml'
     )
@@ -16,8 +17,8 @@ def get_parser():
         configs = yaml.safe_load(file)
     arg_names = list(configs.keys())
     parser = argparse.ArgumentParser(
-                    prog='visual_joint_collect',
-                    description='Collects data needed for robot LfD.')
+                    prog=pkg_name,
+                    description='Record data needed for robot LfD.')
     for arg_name in arg_names:
         parser.add_argument("--"+arg_name, help="(Option) Specify "+arg_name)
     # args = parser.parse_args()
@@ -26,7 +27,7 @@ def get_parser():
 def get_config(config_name):
     try:
         config_path = os.path.join(
-            get_package_share_directory('visual_joint_collect'),
+            get_package_share_directory(pkg_name),
             'config',
             config_name+'.yaml'
         )

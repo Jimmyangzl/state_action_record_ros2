@@ -1,5 +1,5 @@
 save_path: "src/state_action_record_ros2/state_action_record/datasets/data.hdf5" # root dir is workspace
-data_classes: ['obs', 'act']
-freq: 5
+data_classes: ['obs', 'act'] # Leave this unchanged if no other ymal file for data_class defined
+freq: 5 # Frequency to note down data
 start_waiting_time: 10 # Wait for a while so the current state can be updated first
-
+need_start_condition: False # Flag for starting condition, set false if not needed. You can define your own condition in the code.
